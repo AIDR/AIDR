@@ -129,7 +129,7 @@ public class NominalAttributeResource {
         if (attributeID == null) {
             attributeID = 0l;
         }
-        String response = "{\"code\":\"" + code + "\", \"nominalAttributeID\":\"" + attributeID + "\"}";
-        return Response.ok(response).build();
+        //String response = "{\"code\":\"" + code + "\", \"nominalAttributeID\":\"" + attributeID + "\"}";
+        return Response.ok(attributeID).build();
     }
 }

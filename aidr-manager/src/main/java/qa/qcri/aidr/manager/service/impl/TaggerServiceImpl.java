@@ -747,7 +747,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 	// (7)
 	@Override
-	public TaggerAttribute attributeExists(String code) throws AidrException {
+	public Long attributeExists(String code) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			//WebResource webResource = client.resource(taggerMainUrl + "/attribute/code/" + code);
@@ -762,7 +762,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			TaggerAttribute attribute = objectMapper.readValue(jsonResponse, TaggerAttribute.class);
+			Long attribute = objectMapper.readValue(jsonResponse, Long.class);
 			if (attribute != null) {
 				logger.info("Attribute with the code " + code + " already exist in Tagger.");
 				return attribute;

@@ -381,8 +381,8 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> attributeExists(@RequestParam String code) throws Exception {
 
-		TaggerAttribute attribute = taggerService.attributeExists(code);
-		if (attribute != null && attribute.getNominalAttributeID() != null && attribute.getNominalAttributeID() != 0){
+		Long id = taggerService.attributeExists(code);
+		if (id != null && id != 0){
 			return getUIWrapper(true, true);
 		} else {
 			return getUIWrapper(false, true);

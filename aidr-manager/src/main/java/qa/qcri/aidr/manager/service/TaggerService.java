@@ -52,7 +52,7 @@ public interface TaggerService {
 
 	public TaggerLabel createNewLabel(TaggerLabelRequest label) throws AidrException;
 
-	public TaggerAttribute attributeExists(String code) throws AidrException;
+	public Long attributeExists(String code) throws AidrException;
 
 	public List<TrainingDataDTO> getTrainingDataByModelIdAndCrisisId(Integer modelFamilyId,
 			Integer crisisId,
