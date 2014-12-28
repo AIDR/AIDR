@@ -2,7 +2,7 @@ package qa.qcri.aidr.manager.dto;
 
 public class TaggerLabelRequest {
 
-    private Integer nominalLabelID;
+    private Long nominalLabelID;
 
     private Integer nominalAttributeID;
 
@@ -12,11 +12,11 @@ public class TaggerLabelRequest {
 
     private String description;
 
-    public Integer getNominalLabelID() {
+    public Long getNominalLabelID() {
         return nominalLabelID;
     }
 
-    public void setNominalLabelID(Integer nominalLabelID) {
+    public void setNominalLabelID(Long nominalLabelID) {
         this.nominalLabelID = nominalLabelID;
     }
 

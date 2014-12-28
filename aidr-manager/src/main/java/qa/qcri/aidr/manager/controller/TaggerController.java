@@ -1,32 +1,52 @@
 package qa.qcri.aidr.manager.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
+
 import org.apache.log4j.Logger;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
-import qa.qcri.aidr.manager.dto.*;
+import qa.qcri.aidr.manager.dto.CrisisRequest;
+import qa.qcri.aidr.manager.dto.DateHistory;
+import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
+import qa.qcri.aidr.manager.dto.TaggerAttribute;
+import qa.qcri.aidr.manager.dto.TaggerCrisis;
+import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
+import qa.qcri.aidr.manager.dto.TaggerCrisisRequest;
+import qa.qcri.aidr.manager.dto.TaggerCrisisType;
+import qa.qcri.aidr.manager.dto.TaggerLabel;
+import qa.qcri.aidr.manager.dto.TaggerLabelRequest;
+import qa.qcri.aidr.manager.dto.TaggerModel;
+import qa.qcri.aidr.manager.dto.TaggerModelFamily;
+import qa.qcri.aidr.manager.dto.TaggerModelFamilyCollection;
+import qa.qcri.aidr.manager.dto.TaggerUser;
+import qa.qcri.aidr.manager.dto.TaggerUserRequest;
+import qa.qcri.aidr.manager.dto.TaskAnswer;
+import qa.qcri.aidr.manager.dto.TaskAnswerRequest;
+import qa.qcri.aidr.manager.dto.TaskInfo;
+import qa.qcri.aidr.manager.dto.TrainingDataDTO;
+import qa.qcri.aidr.manager.dto.UpdateCrisisDTO;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 @Controller
 @RequestMapping("protected/tagger")
@@ -65,7 +85,7 @@ public class TaggerController extends BaseController {
 		logger.info("Getting crises from Tagger by User");
 		try {
 			String userName = getAuthenticatedUserName();
-			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
+			Long taggerUserId = taggerService.isUserExistsByUsername(userName);
 			if (taggerUserId == null) {
 				TaggerUser taggerUser = new TaggerUser(userName, "normal");
 				taggerUserId = taggerService.addNewUser(taggerUser);
@@ -87,7 +107,7 @@ public class TaggerController extends BaseController {
 		logger.info("Creating new crises in Tagger");
 		try {
 			String userName = getAuthenticatedUserName();
-			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
+			Long taggerUserId = taggerService.isUserExistsByUsername(userName);
 			if (taggerUserId == null) {
 				TaggerUser taggerUser = new TaggerUser(userName, "normal");
 				taggerUserId = taggerService.addNewUser(taggerUser);
@@ -116,7 +136,7 @@ public class TaggerController extends BaseController {
 		logger.info("Getting Attributes For Crises");
 		try {
 			String userName = getAuthenticatedUserName();
-			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
+			Long taggerUserId = taggerService.isUserExistsByUsername(userName);
 			return getUIWrapper(taggerService.getAttributesForCrises(id, taggerUserId), true);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -126,7 +146,7 @@ public class TaggerController extends BaseController {
 
 	@RequestMapping(value = "/addAttributeToCrisis.action", method = {RequestMethod.GET})
 	@ResponseBody
-	public Map<String, Object> addAttributeToCrisis(Integer crisesId, Integer attributeId, Boolean isActive) {
+	public Map<String, Object> addAttributeToCrisis(Integer crisesId, Long attributeId, Boolean isActive) {
 		logger.info("Add Attribute To Crises");
 		try {
 			TaggerModelFamily modelFamily = transformCrisesIdAndAttributeIdToTaggerModelFamily(crisesId, attributeId, isActive);
@@ -224,7 +244,7 @@ public class TaggerController extends BaseController {
 		logger.info("Creating new attribute in Tagger");
 		try {
 			String userName = getAuthenticatedUserName();
-			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
+			Long taggerUserId = taggerService.isUserExistsByUsername(userName);
 			TaggerUser taggerUser = new TaggerUser(taggerUserId);
 			attribute.setUsers(taggerUser);
 
@@ -361,8 +381,8 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> attributeExists(@RequestParam String code) throws Exception {
 
-		TaggerAttribute attribute = taggerService.attributeExists(code);
-		if (attribute != null && attribute.getNominalAttributeID() != null && attribute.getNominalAttributeID() != 0){
+		Long id = taggerService.attributeExists(code);
+		if (id != null && id != 0){
 			return getUIWrapper(true, true);
 		} else {
 			return getUIWrapper(false, true);
@@ -500,7 +520,7 @@ public class TaggerController extends BaseController {
 		logger.info("Saving TaskAnswer in AIDRCrowdsourcing");
 		try {
 			String userName = getAuthenticatedUserName();
-			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
+			Long taggerUserId = taggerService.isUserExistsByUsername(userName);
 			if (taggerUserId == null) {
 				logger.error("Saving TaskAnswer - can not find Tagger user by User name");
 				return getUIWrapper(false, "Saving TaskAnswer - can not find Tagger user by User name");
@@ -644,13 +664,13 @@ public class TaggerController extends BaseController {
 		//return getUIWrapper(result,true);
 	}
 
-	private TaggerCrisisRequest transformCrisesRequestToTaggerCrises (CrisisRequest request, Integer taggerUserId) throws Exception{
+	private TaggerCrisisRequest transformCrisesRequestToTaggerCrises (CrisisRequest request, Long taggerUserId) throws Exception{
 		TaggerCrisisType crisisType = new TaggerCrisisType(request.getCrisisTypeID());
 		TaggerUserRequest taggerUser = new TaggerUserRequest(taggerUserId);
 		return new TaggerCrisisRequest(request.getCode(), request.getName(), crisisType, taggerUser);
 	}
 	
-	private TaggerModelFamily transformCrisesIdAndAttributeIdToTaggerModelFamily (Integer crisesId, Integer attributeId, Boolean isActive) throws Exception{
+	private TaggerModelFamily transformCrisesIdAndAttributeIdToTaggerModelFamily (Integer crisesId, Long attributeId, Boolean isActive) throws Exception{
 		TaggerCrisis crisis = new TaggerCrisis(crisesId);
 		TaggerAttribute nominalAttribute = new TaggerAttribute(attributeId);
 		return new TaggerModelFamily(crisis, nominalAttribute, isActive);
@@ -665,10 +685,10 @@ public class TaggerController extends BaseController {
 		return crisis;
 	}
 
-	private List<TaskAnswer> transformTaskAnswerRequestToTaskAnswer (TaskAnswerRequest taskAnswerRequest, Integer taggerUserId) {
+	private List<TaskAnswer> transformTaskAnswerRequestToTaskAnswer (TaskAnswerRequest taskAnswerRequest, Long taggerUserId) {
 		List<TaskAnswer> result = new ArrayList<TaskAnswer>();
 		TaskAnswer taskAnswer = new TaskAnswer();
-		taskAnswer.setUser_id(taggerUserId);
+		taskAnswer.setUserId(taggerUserId);
 
 		DateHistory dateHistory = new DateHistory();
 		dateHistory.setTaskcreated(taskAnswerRequest.getTaskcreated());

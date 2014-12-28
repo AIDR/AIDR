@@ -171,7 +171,7 @@ public class ScreenController extends BaseController{
     @RequestMapping("protected/{id}/attribute-details")
     public ModelAndView attributeDetails(@PathVariable(value="id") Integer id) throws Exception {
         ModelAndView model = new ModelAndView("tagger/attribute-details");
-        Integer taggerUserId = 0;
+        Long taggerUserId = 0L;
         try {
             String userName = getAuthenticatedUserName();
             taggerUserId = taggerService.isUserExistsByUsername(userName);
@@ -215,12 +215,12 @@ public class ScreenController extends BaseController{
             }
         }
 
-        Integer taggerUserId = 0;
+        Long taggerUserId = 0L;
         try {
             String userName = getAuthenticatedUserName();
             taggerUserId = taggerService.isUserExistsByUsername(userName);
             if(taggerUserId == null){
-                taggerUserId = 0;
+                taggerUserId = 0L;
             }
 
 

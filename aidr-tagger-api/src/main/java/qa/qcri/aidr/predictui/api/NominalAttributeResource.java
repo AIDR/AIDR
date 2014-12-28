@@ -24,8 +24,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
@@ -90,7 +92,7 @@ public class NominalAttributeResource {
     }
 
     @POST
-    @Consumes("application/json")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
         boolean response = attributeLocalEJB.addAttribute(attribute);
@@ -115,9 +117,8 @@ public class NominalAttributeResource {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAttribute(@PathParam("id") Long id) throws PropertyNotSetException {
-        boolean response;
-        response = attributeLocalEJB.deleteAttribute(id);
-        return response == true ? Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build() : Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"))).build();
+        boolean response = attributeLocalEJB.deleteAttribute(id);
+		return Response.ok(response).build();
     }
 
     @GET
@@ -128,7 +129,7 @@ public class NominalAttributeResource {
         if (attributeID == null) {
             attributeID = 0l;
         }
-        String response = "{\"code\":\"" + code + "\", \"nominalAttributeID\":\"" + attributeID + "\"}";
-        return Response.ok(response).build();
+        //String response = "{\"code\":\"" + code + "\", \"nominalAttributeID\":\"" + attributeID + "\"}";
+        return Response.ok(attributeID).build();
     }
 }

@@ -8,7 +8,7 @@ public class TaskInfo {
 
     private String category;
 
-    private Integer aidrID;
+    private Long aidrID;
 
     private String tweetid;
 
@@ -40,11 +40,11 @@ public class TaskInfo {
         this.category = category;
     }
 
-    public Integer getAidrID() {
+    public Long getAidrID() {
         return aidrID;
     }
 
-    public void setAidrID(Integer aidrID) {
+    public void setAidrID(Long aidrID) {
         this.aidrID = aidrID;
     }
 

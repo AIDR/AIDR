@@ -4,7 +4,7 @@ import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 
 public class TaggerUser {
 
-	private Integer userID;
+	private Long userID;
 
 	private String name;
 
@@ -13,7 +13,7 @@ public class TaggerUser {
 	public TaggerUser() {
 	}
 
-	public TaggerUser(Integer userID) {
+	public TaggerUser(Long userID) {
 		this.userID = userID;
 	}
 
@@ -26,7 +26,7 @@ public class TaggerUser {
 		if (dto != null) {
 			this.setName(dto.getName());
 			this.setRole(dto.getRole());
-			this.setUserID(dto.getUserID().intValue());
+			this.setUserID(dto.getUserID());
 		}
 	}
 
@@ -35,11 +35,11 @@ public class TaggerUser {
 		return dto;
 	}
 
-	public Integer getUserID() {
+	public Long getUserID() {
 		return userID;
 	}
 
-	public void setUserID(Integer userID) {
+	public void setUserID(Long userID) {
 		this.userID = userID;
 	}
 
