@@ -4,7 +4,7 @@ import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 
 public class TaggerUserRequest {
 
-    private Integer userID;
+    private Long userID;
 
     public TaggerUserRequest() {
     }
@@ -16,15 +16,15 @@ public class TaggerUserRequest {
 		return dto;
 	}
 	
-    public TaggerUserRequest(Integer userID) {
+    public TaggerUserRequest(Long userID) {
         this.userID = userID;
     }
 
-    public Integer getUserID() {
+    public Long getUserID() {
         return userID;
     }
 
-    public void setUserID(Integer userID) {
+    public void setUserID(Long userID) {
         this.userID = userID;
     }
 

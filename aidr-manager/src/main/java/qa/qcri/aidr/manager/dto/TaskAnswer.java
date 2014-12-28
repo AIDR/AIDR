@@ -2,17 +2,17 @@ package qa.qcri.aidr.manager.dto;
 
 public class TaskAnswer {
 
-    private Integer user_id;
+    private Long user_id;
 
     private DateHistory dateHistory;
 
     private TaskInfo info;
 
-    public Integer getUser_id() {
+    public Long getUserId() {
         return user_id;
     }
 
-    public void setUser_id(Integer user_id) {
+    public void setUserId(Long user_id) {
         this.user_id = user_id;
     }
 

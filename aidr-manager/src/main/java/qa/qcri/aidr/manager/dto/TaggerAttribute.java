@@ -14,7 +14,7 @@ public class TaggerAttribute {
 
     private String name;
 
-    private Integer nominalAttributeID;
+    private Long nominalAttributeID;
 
     private TaggerUser users;
 
@@ -23,11 +23,11 @@ public class TaggerAttribute {
     public TaggerAttribute() {
     }
 
-    public TaggerAttribute(Integer nominalAttributeID) {
+    public TaggerAttribute(Long nominalAttributeID) {
         this.nominalAttributeID = nominalAttributeID;
     }
 
-    public TaggerAttribute(String code, String description, String name, Integer nominalAttributeID,
+    public TaggerAttribute(String code, String description, String name, Long nominalAttributeID,
                            TaggerUser users, List<TaggerLabel> nominalLabelCollection) {
         this.code = code;
         this.description = description;
@@ -42,7 +42,7 @@ public class TaggerAttribute {
     		this.setCode(dto.getCode());
     		this.setDescription(dto.getDescription());
     		this.setName(dto.getName());
-    		this.setNominalAttributeID(dto.getNominalAttributeId().intValue());
+    		this.setNominalAttributeID(dto.getNominalAttributeId().longValue());
     		this.setUsers(new TaggerUser(dto.getUsersDTO()));
     		
     		List<TaggerLabel> labelList = new ArrayList<TaggerLabel>();
@@ -90,11 +90,11 @@ public class TaggerAttribute {
         this.name = name;
     }
 
-    public Integer getNominalAttributeID() {
+    public Long getNominalAttributeID() {
         return nominalAttributeID;
     }
 
-    public void setNominalAttributeID(Integer nominalAttributeID) {
+    public void setNominalAttributeID(Long nominalAttributeID) {
         this.nominalAttributeID = nominalAttributeID;
     }
 

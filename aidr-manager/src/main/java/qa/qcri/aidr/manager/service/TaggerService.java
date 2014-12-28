@@ -1,6 +1,5 @@
 package qa.qcri.aidr.manager.service;
 
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
@@ -13,17 +12,17 @@ public interface TaggerService {
 
 	public List<TaggerCrisisType> getAllCrisisTypes() throws AidrException;
 
-	public List<TaggerCrisis> getCrisesByUserId(Integer userId) throws AidrException;
+	public List<TaggerCrisis> getCrisesByUserId(Long userId) throws AidrException;
 
 	public String createNewCrises(TaggerCrisisRequest crisis) throws AidrException;
 
-	public Collection<TaggerAttribute> getAttributesForCrises(Integer crisisID, Integer userId) throws AidrException;
+	public Collection<TaggerAttribute> getAttributesForCrises(Integer crisisID, Long userId) throws AidrException;
 
 	public TaggerCrisisExist isCrisesExist(String code) throws AidrException;
 
-	public Integer isUserExistsByUsername(String userName) throws AidrException;
+	public Long isUserExistsByUsername(String userName) throws AidrException;
 
-	public Integer addNewUser(TaggerUser taggerUser) throws AidrException;
+	public Long addNewUser(TaggerUser taggerUser) throws AidrException;
 
 	public Integer addAttributeToCrisis(TaggerModelFamily modelFamily) throws AidrException;
 

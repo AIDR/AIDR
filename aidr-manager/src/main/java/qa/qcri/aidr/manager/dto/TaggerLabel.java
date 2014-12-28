@@ -4,7 +4,7 @@ import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 
 public class TaggerLabel {
 
-    private Integer nominalLabelID;
+    private Long nominalLabelID;
 
     private String name;
 
@@ -19,7 +19,7 @@ public class TaggerLabel {
     public TaggerLabel() {
     }
 
-    public TaggerLabel(String name, Integer nominalLabelID) {
+    public TaggerLabel(String name, Long nominalLabelID) {
         this.name = name;
         this.nominalLabelID = nominalLabelID;
     }
@@ -34,7 +34,7 @@ public class TaggerLabel {
 
     public TaggerLabel(NominalLabelDTO dto) throws Exception {
     	if (dto != null) {
-    		this.setNominalLabelID(dto.getNominalLabelId().intValue());
+    		this.setNominalLabelID(dto.getNominalLabelId().longValue());
     		this.setName(dto.getName());
     		this.setDescription(dto.getDescription());
     		this.setNominalLabelCode(dto.getNominalLabelCode());
@@ -54,11 +54,11 @@ public class TaggerLabel {
     	return dto;
     }
     
-    public Integer getNominalLabelID() {
+    public Long getNominalLabelID() {
         return nominalLabelID;
     }
 
-    public void setNominalLabelID(Integer nominalLabelID) {
+    public void setNominalLabelID(Long nominalLabelID) {
         this.nominalLabelID = nominalLabelID;
     }
 

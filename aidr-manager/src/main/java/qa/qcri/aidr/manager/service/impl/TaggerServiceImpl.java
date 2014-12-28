@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
+import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
@@ -84,7 +87,7 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public List<TaggerCrisis> getCrisesByUserId(Integer userId) throws AidrException {
+	public List<TaggerCrisis> getCrisesByUserId(Long userId) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			/**
@@ -137,7 +140,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 	// (6)
 	@Override
-	public Collection<TaggerAttribute> getAttributesForCrises(Integer crisisID, Integer userId) throws AidrException {
+	public Collection<TaggerAttribute> getAttributesForCrises(Integer crisisID, Long userId) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			// Rest call to Tagger
@@ -154,15 +157,15 @@ public class TaggerServiceImpl implements TaggerService {
 			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			TaggerCrisisAttributesResponse crisisAttributesResponse = objectMapper.readValue(jsonResponse, TaggerCrisisAttributesResponse.class);
+			List<CrisisAttributesDTO> crisisAttributesResponse = objectMapper.readValue(jsonResponse, List.class);
 
-			if (crisisAttributesResponse.getCrisisAttributes() != null) {
-				logger.info("Tagger returned " + crisisAttributesResponse.getCrisisAttributes().size() + " attributes available for crises with ID " + crisisID);
+			if (crisisAttributesResponse != null) {
+				logger.info("Tagger returned " + crisisAttributesResponse.size() + " attributes available for crises with ID " + crisisID);
 			} else {
 				return Collections.emptyList();
 			}
 
-			return convertTaggerCrisesAttributeToDTO(crisisAttributesResponse.getCrisisAttributes(), userId);
+			return convertTaggerCrisesAttributeToDTO(crisisAttributesResponse, userId);
 		} catch (Exception e) {
 			throw new AidrException("Error while getting all attributes for crisis from Tagger", e);
 		}
@@ -220,7 +223,7 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public Integer isUserExistsByUsername(String userName) throws AidrException {
+	public Long isUserExistsByUsername(String userName) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			/**
@@ -253,7 +256,7 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public Integer addNewUser(TaggerUser taggerUser) throws AidrException {
+	public Long addNewUser(TaggerUser taggerUser) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			/**
@@ -640,18 +643,41 @@ public class TaggerServiceImpl implements TaggerService {
 			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			TaggerAttribute updatedAttribute = objectMapper.readValue(jsonResponse, TaggerAttribute.class);
+			NominalAttributeDTO updatedAttribute = objectMapper.readValue(jsonResponse, NominalAttributeDTO.class);
 			if (updatedAttribute != null) {
-				logger.info("Attribute with id " + updatedAttribute.getNominalAttributeID() + " was updated in Tagger");
+				logger.info("Attribute with id " + updatedAttribute.getNominalAttributeId() + " was updated in Tagger");
 			} else {
 				return null;
 			}
 
-			return attribute;
+			return dto2taggerAttribute(updatedAttribute);
 		} catch (Exception e) {
 			throw new AidrException("Error while updating attribute in Tagger", e);
 		}
 	}
+	
+	private TaggerAttribute dto2taggerAttribute(NominalAttributeDTO src) {
+		TaggerAttribute dest = new TaggerAttribute();
+		dest.setCode(src.getCode());
+		dest.setDescription(src.getDescription());
+		dest.setName(src.getName());
+		dest.setNominalAttributeID(src.getNominalAttributeId());
+		dest.setUsers(new TaggerUser(src.getUsersDTO().getUserID()));
+		List<TaggerLabel> tll = new ArrayList<TaggerLabel>();
+		for (NominalLabelDTO i : src.getNominalLabelsDTO()) {
+			TaggerLabel tl = new TaggerLabel();
+			tl.setNominalLabelID(i.getNominalLabelId());
+			tl.setName(i.getName());
+			tl.setNominalLabelCode(i.getNominalLabelCode());
+			tl.setDescription(i.getDescription());
+			tl.setSequence(i.getSequence());
+			//tl.setNominalAttribute(i.getNominalAttributeDTO());
+			tll.add(tl);
+		}
+		dest.setNominalLabelCollection(tll);
+		return dest;
+	}
+
 
 	@Override
 	public TaggerLabel updateLabel(TaggerLabelRequest label) throws AidrException {
@@ -1294,23 +1320,23 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 	}
 
-	private Collection<TaggerAttribute> convertTaggerCrisesAttributeToDTO(List<TaggerCrisesAttribute> attributes, Integer userId) {
+	private Collection<TaggerAttribute> convertTaggerCrisesAttributeToDTO(List<CrisisAttributesDTO> attributes, Long userId) {
 		Map<Integer, TaggerAttribute> result = new HashMap<Integer, TaggerAttribute>();
-		for (TaggerCrisesAttribute a : attributes) {
+		for (CrisisAttributesDTO a : attributes) {
 			if (!result.containsKey(a.getNominalAttributeID())) {
 				if (!userId.equals(a.getUserID()) && !(new Integer(1)).equals(a.getUserID())) {
 					continue;
 				}
-				TaggerUser user = new TaggerUser(a.getUserID());
+				TaggerUser user = new TaggerUser(a.getUserID().longValue());
 				List<TaggerLabel> labels = new ArrayList<TaggerLabel>();
-				TaggerLabel label = new TaggerLabel(a.getLabelName(), a.getLabelID());
+				TaggerLabel label = new TaggerLabel(a.getLabelName(), a.getLabelID().longValue());
 				labels.add(label);
-				TaggerAttribute taggerAttribute = new TaggerAttribute(a.getCode(), a.getDescription(), a.getName(), a.getNominalAttributeID(), user, labels);
+				TaggerAttribute taggerAttribute = new TaggerAttribute(a.getCode(), a.getDescription(), a.getName(), a.getNominalAttributeID().longValue(), user, labels);
 				result.put(a.getNominalAttributeID(), taggerAttribute);
 			} else {
 				TaggerAttribute taggerAttribute = result.get(a.getNominalAttributeID());
 				List<TaggerLabel> labels = taggerAttribute.getNominalLabelCollection();
-				TaggerLabel label = new TaggerLabel(a.getLabelName(), a.getLabelID());
+				TaggerLabel label = new TaggerLabel(a.getLabelName(), a.getLabelID().longValue());
 				labels.add(label);
 			}
 		}
