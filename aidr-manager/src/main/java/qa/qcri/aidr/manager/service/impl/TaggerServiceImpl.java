@@ -477,10 +477,10 @@ public class TaggerServiceImpl implements TaggerService {
 			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			TaggerAttribute response = objectMapper.readValue(jsonResponse, TaggerAttribute.class);
+			NominalAttributeDTO response = objectMapper.readValue(jsonResponse, NominalAttributeDTO.class);
 			if (response != null) {
-				logger.info("Attribute with ID " + response.getNominalAttributeID() + " was retrieved from Tagger");
-				return response;
+				logger.info("Attribute with ID " + response.getNominalAttributeId() + " was retrieved from Tagger");
+				return dto2taggerAttribute(response);
 			}
 			return null;
 		} catch (Exception e) {
