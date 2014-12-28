@@ -533,16 +533,13 @@ public class TaggerServiceImpl implements TaggerService {
 			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			TaggerStatusResponse response = objectMapper.readValue(jsonResponse, TaggerStatusResponse.class);
-			if (response != null && response.getStatusCode() != null) {
-				if ("SUCCESS".equals(response.getStatusCode())) {
-					logger.info("Attribute with ID " + id + " was deleted in Tagger");
-					return true;
-				} else {
-					return false;
-				}
+			Boolean response = objectMapper.readValue(jsonResponse, Boolean.class);
+			if (response != null && response) {
+				logger.info("Attribute with ID " + id + " was deleted in Tagger");
+				return true;
+			} else {
+				return false;
 			}
-			return false;
 		} catch (Exception e) {
 			throw new AidrException("Error while deleting attribute in Tagger", e);
 		}
