@@ -170,16 +170,15 @@ public class CollectionTask {
         }
     }
 
+    /**
+     * Check if all twitter specific information is available in the request
+     * @return
+     */
     public boolean isTwitterInfoPresent() {
-        if (StringUtils.isNotEmpty(getAccessToken())
+        return StringUtils.isNotEmpty(getAccessToken())
                 && StringUtils.isNotEmpty(getAccessTokenSecret())
                 && StringUtils.isNotEmpty(getConsumerKey())
-                && StringUtils.isNotEmpty(getConsumerSecret())) {
-
-            return true;
-        } else {
-            return false;
-        }
+                && StringUtils.isNotEmpty(getConsumerSecret());
     }
 
     /**
