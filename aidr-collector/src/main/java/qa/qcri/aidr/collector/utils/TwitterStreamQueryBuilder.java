@@ -24,14 +24,15 @@ public class TwitterStreamQueryBuilder {
 
     // add geolocation 
     public TwitterStreamQueryBuilder(String track, String follow, String geoLocation, String langFilters) {
+    	this();
         setToFollow(follow);
         setToTrack(track);
         setGeoLocation(geoLocation);
-        langMap = new HashMap<Integer, String>();
         setLanguageFilter(langFilters.toLowerCase());
     }
 
     public TwitterStreamQueryBuilder() {
+        langMap = new HashMap<Integer, String>();
     }
     
     public void setLanguageFilter(String langFilters) {
